@@ -58,9 +58,6 @@ def get_s814_time(names):
 def get_s800_time(names):
     return [ 6.25 * float(el.split('_')[1][-2:]) for el in names]
 
-def get_periodgram(sc_data):
-    sc_data_z = sc.pp.scale(sc_data, max_value=3,copy =True)
-    return [signal.periodogram(sc_data_z.X[:,i]) for i in range(sc_data_z.shape[1])]
 
 def plot_one_row_line(df, row_num):
     df.iloc[row_num,:].plot.line()
@@ -128,12 +125,18 @@ def preprocessing (adata, n_expressed=200):
 
     return adata, adata[:,adata.var.top_n_expressed.isin([True])]
 
+def get_periodgram(sc_data):
+    sc_data_zscore = sc.pp.scale(sc_data, max_value=3,copy =True)
+    # returns an iterable for each gene, (freq, power, ?I forget?)
+    # we only care about power, as the freq vector is the same for all. 
+    power = [signal.periodogram(sc_data_z.X[:,i])[1] for i in range(sc_data_z.shape[1])]
+    return np.array(power)[0]
 
 
 def get_mutual_periodgram_genes(adata_miRNA, target_miRNA, adata_mRNA, n_closest=50):
    
-    pd_array_mi = np.array([i[1] for i in get_periodgram(adata_miRNA)])
-    pd_array_m = np.array([i[1] for i in get_periodgram(adata_mRNA)])
+    pd_array_mi = get_periodgram(adata_miRNA)
+    pd_array_m = get_periodgram(adata_mRNA)
     
     position = list(adata_miRNA.var.index).index(target_miRNA)
 
