@@ -150,3 +150,32 @@ def get_mutual_periodgram_genes(adata_miRNA, target_miRNA, adata_mRNA, n_closest
     cutoff = sorted(adata_mRNA.var.dist, reverse=False)[n_closest]
     clost_dist = adata_mRNA[:, adata_mRNA.var.dist < cutoff]
     return clost_dist.var
+
+def plot_combine_targetMiR_ComMR(common_genes_set,miR_set,mR_set):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    time = mR_set.obs.time
+    
+    for g in common_genes_set:
+        position = list(mR_set.var.index).index(g)
+        y = mR_set.X[:,position]
+        ax.plot(time,y/np.linalg.norm(y), label=mR_set.var.index[position].split(',')[0])
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    
+    position1 = list(miR_set.var.index).index('hsa-miR-10a-5p')
+    ax.plot(time,y/np.linalg.norm(y), label=miR_set.var.index[position1].split(',')[0])
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+def plot_targetmiRNA_group(miRNA,mRNA,C):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    time = miRNA.obs.time
+
+    for i in range(len(C)):
+        if miRNA.var.index[i] =='hsa-miR-10a-5p':
+            a = C[i]
+    for i in range(len(C)):
+        if C[i]==a:
+            y = mRNA.X[:,i]
+            ax.plot(time,y/np.linalg.norm(y), label=miRNA.var.index[i].split(',')[0])
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
