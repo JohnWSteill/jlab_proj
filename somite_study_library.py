@@ -161,12 +161,14 @@ def plot_combine_targetMiR_ComMR(common_genes_set,miR_set,mR_set):
         y = mR_set.X[:,position]
         ax.plot(time,y/np.linalg.norm(y), label=mR_set.var.index[position].split(',')[0])
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        
     
     position1 = list(miR_set.var.index).index('hsa-miR-10a-5p')
+    y = miR_set.X[:,position1]
     ax.plot(time,y/np.linalg.norm(y), label=miR_set.var.index[position1].split(',')[0])
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-def plot_targetmiRNA_group(miRNA,mRNA,C):
+def plot_targetmiRNA_group(miRNA,C):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     time = miRNA.obs.time
@@ -176,6 +178,6 @@ def plot_targetmiRNA_group(miRNA,mRNA,C):
             a = C[i]
     for i in range(len(C)):
         if C[i]==a:
-            y = mRNA.X[:,i]
+            y = miRNA.X[:,i]
             ax.plot(time,y/np.linalg.norm(y), label=miRNA.var.index[i].split(',')[0])
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
