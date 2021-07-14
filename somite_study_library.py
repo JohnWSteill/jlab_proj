@@ -129,8 +129,8 @@ def get_periodgram(sc_data):
     sc_data_zscore = sc.pp.scale(sc_data, max_value=3,copy =True)
     # returns an iterable for each gene, (freq, power, ?I forget?)
     # we only care about power, as the freq vector is the same for all. 
-    power = [signal.periodogram(sc_data_z.X[:,i])[1] for i in range(sc_data_z.shape[1])]
-    return np.array(power)[0]
+    power = [signal.periodogram(sc_data_zscore.X[:,i])[1] for i in range(sc_data_zscore.shape[1])]
+    return np.array(power)
 
 
 def get_mutual_periodgram_genes(adata_miRNA, target_miRNA, adata_mRNA, n_closest=50):
@@ -144,8 +144,40 @@ def get_mutual_periodgram_genes(adata_miRNA, target_miRNA, adata_mRNA, n_closest
     x = pd_array_mi[position]
     for i in range(len(pd_array_m)):
         y = pd_array_m[i]
+        #print(x,y,adata_mRNA.shape,i)
         adata_mRNA.var.loc[adata_mRNA.var.index[i], 'dist'] = dist(x[3:33],y[3:33])
     
     cutoff = sorted(adata_mRNA.var.dist, reverse=False)[n_closest]
     clost_dist = adata_mRNA[:, adata_mRNA.var.dist < cutoff]
     return clost_dist.var
+
+def plot_combine_targetMiR_ComMR(common_genes_set,miR_set,mR_set):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    time = mR_set.obs.time
+    
+    for g in common_genes_set:
+        position = list(mR_set.var.index).index(g)
+        y = mR_set.X[:,position]
+        ax.plot(time,y/np.linalg.norm(y), label=mR_set.var.index[position].split(',')[0])
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        
+    
+    position1 = list(miR_set.var.index).index('hsa-miR-10a-5p')
+    y = miR_set.X[:,position1]
+    ax.plot(time,y/np.linalg.norm(y), label=miR_set.var.index[position1].split(',')[0])
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+def plot_targetmiRNA_group(miRNA,C):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    time = miRNA.obs.time
+
+    for i in range(len(C)):
+        if miRNA.var.index[i] =='hsa-miR-10a-5p':
+            a = C[i]
+    for i in range(len(C)):
+        if C[i]==a:
+            y = miRNA.X[:,i]
+            ax.plot(time,y/np.linalg.norm(y), label=miRNA.var.index[i].split(',')[0])
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
