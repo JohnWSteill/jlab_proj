@@ -212,3 +212,19 @@ def draw_single_miRNA(miRNA_of_interest, data_sets):
     ax.set_ylabel('Normalized expression')
     plt.title(f"{miRNA_of_interest} Under Three Time Courses")
     return (fig, ax)
+
+def prep_data():
+    pass
+    # filter out beginning and ending? Look at a few genes and make a guess
+    
+
+def get_similarity(series_1, series_2):
+    pass
+    # rough idea:
+    # 1) get periodogram of both series.
+    # 2) filter to frequencies of interest (not too fast, <= 30min)
+    # 3) How close are they? 
+    # 3a Naive : sum ((series_1_pd_i - series_2_pd_i)**2)
+    # 3b) maybe normaize first?
+    # 3c) Apply filter to only use some frequencies?
+    # 
