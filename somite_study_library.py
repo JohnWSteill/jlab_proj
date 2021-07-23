@@ -198,3 +198,17 @@ def get_normed_and_zero_filtered_data(filenamei, alg = 'cpm', quantile=None):
           .drop('sum', axis = 1)
          )
     return df
+
+def draw_single_miRNA(miRNA_of_interest, data_sets):
+    fig, ax = plt.subplots(figsize=(15,10))
+
+    for label, miRNA_set in data_sets.items():
+        position = list(miRNA_set.var.index).index(miRNA_of_interest)
+        y = miRNA_set.X[:,position]
+        x = miRNA_set.obs.time
+        ax.plot(x,y/np.linalg.norm(y), label=label, linewidth=2.5,marker='o')
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.set_xlabel('Time (minutes)')
+    ax.set_ylabel('Normalized expression')
+    plt.title(f"{miRNA_of_interest} Under Three Time Courses")
+    return (fig, ax)
