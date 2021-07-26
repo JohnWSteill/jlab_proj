@@ -213,13 +213,30 @@ def draw_single_miRNA(miRNA_of_interest, data_sets):
     plt.title(f"{miRNA_of_interest} Under Three Time Courses")
     return (fig, ax)
 
-def prep_data():
-    pass
+def prep_data(adata,K):
+     return adata[K:len(s743_adata.obs)-K-1]
     # filter out beginning and ending? Look at a few genes and make a guess
     
 
 def get_similarity(series_1, series_2):
-    pass
+    
+    for dataset in (series_1, series_2):
+    position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
+    f, Pxx_den = signal.periodogram(dataset[:,position].X.T, fs = 1/12.5/60)
+    lib.plt.scatter(f, Pxx_den.T,label=label)
+    lib.plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    lib.plt.ylim([1e-2, 1e3])
+    lib.plt.xlabel('frequency [Hz]')
+    lib.plt.ylabel('PSD [V**2/Hz]')
+    lib.plt.show()
+    
+    series1_array = lib.get_periodgram(series_1)
+    series2_array = lib.get_periodgram(series_2)
+    #series1 and series2 should have the same shape
+    for i in len(series1_array):
+         dist = np.sum(dist(series1_array[i],series2_array[i]))
+        
+    return
     # rough idea:
     # 1) get periodogram of both series.
     # 2) filter to frequencies of interest (not too fast, <= 30min)
