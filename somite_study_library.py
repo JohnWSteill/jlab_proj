@@ -199,12 +199,15 @@ def get_normed_and_zero_filtered_data(filenamei, alg = 'cpm', quantile=None):
          )
     return df
 
+def get_series_for_var(var_of_interest, adata):
+    position = list(adata.var.index).index(var_of_interest)
+    return adata.X[:,position]
+
 def draw_single_miRNA(miRNA_of_interest, data_sets):
     fig, ax = plt.subplots(figsize=(15,10))
 
     for label, miRNA_set in data_sets.items():
-        position = list(miRNA_set.var.index).index(miRNA_of_interest)
-        y = miRNA_set.X[:,position]
+        y = get_series_for_var(miRNA_of_interest,miRNA_set)
         x = miRNA_set.obs.time
         ax.plot(x,y/np.linalg.norm(y), label=label, linewidth=2.5,marker='o')
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -214,11 +217,29 @@ def draw_single_miRNA(miRNA_of_interest, data_sets):
     return (fig, ax)
 
 def prep_data(adata,K):
-     return adata[K:len(s743_adata.obs)-K-1]
+    # JWS comments: cool, can you change to K_beg and K_end? 
+    return adata[K:len(s743_adata.obs)-K-1]
     # filter out beginning and ending? Look at a few genes and make a guess
     
 
 def get_similarity(series_1, series_2):
+    # rough idea:
+    # 1) get periodogram of both series.
+    
+    series1_array = signal.periodogram(series_1)
+    series2_array = signal.periodogram(series_2)
+    
+    # 2) filter to frequencies of interest (not too fast, <= 30min)
+    # 3) How close are they? 
+    # 3a Naive : sum ((series_1_pd_i :- series_2_pd_i)**2)
+    # 3b) maybe normalize first? (normalize in frequency space)
+    # 3c) Apply filter to only use some frequencies?
+    
+    
+   
+    #series1 and series2 should have the same shape
+    for i in range(0,len(series1_array)):
+         dist1 = np.sum(dist(series1_array[i],series2_array[i]))
     
     for dataset in (series_1, series_2):
         position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
@@ -230,18 +251,7 @@ def get_similarity(series_1, series_2):
         lib.plt.ylabel('PSD [V**2/Hz]')
         lib.plt.show()
     
-    series1_array = lib.get_periodgram(series_1)
-    series2_array = lib.get_periodgram(series_2)
-    #series1 and series2 should have the same shape
-    for i in len(series1_array):
-         dist = np.sum(dist(series1_array[i],series2_array[i]))
-        
-    return
-    # rough idea:
-    # 1) get periodogram of both series.
-    # 2) filter to frequencies of interest (not too fast, <= 30min)
-    # 3) How close are they? 
-    # 3a Naive : sum ((series_1_pd_i - series_2_pd_i)**2)
-    # 3b) maybe normaize first?
-    # 3c) Apply filter to only use some frequencies?
+    
+    return dist1
+   
     # 
