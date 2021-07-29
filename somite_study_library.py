@@ -221,14 +221,14 @@ def prep_data(adata,K):
 def get_similarity(series_1, series_2):
     
     for dataset in (series_1, series_2):
-    position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
-    f, Pxx_den = signal.periodogram(dataset[:,position].X.T, fs = 1/12.5/60)
-    lib.plt.scatter(f, Pxx_den.T,label=label)
-    lib.plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    lib.plt.ylim([1e-2, 1e3])
-    lib.plt.xlabel('frequency [Hz]')
-    lib.plt.ylabel('PSD [V**2/Hz]')
-    lib.plt.show()
+        position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
+        f, Pxx_den = signal.periodogram(dataset[:,position].X.T, fs = 1/12.5/60)
+        lib.plt.scatter(f, Pxx_den.T,label=label)
+        lib.plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        lib.plt.ylim([1e-2, 1e3])
+        lib.plt.xlabel('frequency [Hz]')
+        lib.plt.ylabel('PSD [V**2/Hz]')
+        lib.plt.show()
     
     series1_array = lib.get_periodgram(series_1)
     series2_array = lib.get_periodgram(series_2)
