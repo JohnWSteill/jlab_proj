@@ -1,4 +1,3 @@
-import random
 import pandas as pd
 import numpy as np
 import scanpy as sc
@@ -37,17 +36,6 @@ def load_top_expressed_preprocessed_data():
     return (s745_1_top, s745_2_top, s743_top, s800_top, s814_top)
 
 
-def get_normed_and_zero_filtered_data(filename):
-    # TODO perhaps include other normalization options
-    df = pd.read_csv(filename, sep = '\t', index_col = 0)
-    df = df / df.mean()
-    df = df.loc[df.sum(axis=1) != 0,:]
-    df = (df
-          .assign(sum=df.sum(axis=1))
-          .sort_values(by='sum', ascending=False)
-          .drop('sum', axis = 1)
-         )
-    return df
 
 def get_s745_time(names):
     return [float(el.split('_')[1]) for el in names]
@@ -182,7 +170,19 @@ def plot_targetmiRNA_group(miRNA,C):
             ax.plot(time,y/np.linalg.norm(y), label=miRNA.var.index[i].split(',')[0])
             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
             
-def get_normed_and_zero_filtered_data(filenamei, alg = 'cpm', quantile=None):
+def get_normed_and_zero_filtered_data(filename):
+    # TODO perhaps include other normalization options
+    df = pd.read_csv(filename, sep = '\t', index_col = 0)
+    df = df / df.mean()
+    df = df.loc[df.sum(axis=1) != 0,:]
+    df = (df
+          .assign(sum=df.sum(axis=1))
+          .sort_values(by='sum', ascending=False)
+          .drop('sum', axis = 1)
+         )
+    return df
+
+def get_normed_and_zero_filtered_data_jws(filename, alg = 'cpm', quantile=None):
     df = pd.read_csv(filename, sep = '\t', index_col = 0)
     df = df.loc[df.sum(axis=1) != 0,:]
     assert alg in ['cpm', 'qbr']
@@ -216,43 +216,54 @@ def draw_single_miRNA(miRNA_of_interest, data_sets):
     plt.title(f"{miRNA_of_interest} Under Three Time Courses")
     return (fig, ax)
 
-def prep_data(adata,K):
-    # JWS comments: cool, can you change to K_beg and K_end? 
-    return adata[K:len(s743_adata.obs)-K-1]
-    # filter out beginning and ending? Look at a few genes and make a guess
+def prep_data(adata,K_start, K_end):
+    return adata[K_start:len(adata.obs)-K_end-1]
+   
+
+def plot_2_periodogram(miRNA_set, series_1, series_2,time):
+    
+    position1 = list(miRNA_set.var.index).index(series_1)
+    position2 = list(miRNA_set.var.index).index(series_2)
+    
+    f, Pxx_den = signal.periodogram(miRNA_set[:,position1].X.T, fs = 1/time/60)
+    plt.scatter(f, Pxx_den.T,label=series_1)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylim([1e-2, 1e3])
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD [V**2/Hz]')
+    plt.show()
+    f, Pxx_den = signal.periodogram(miRNA_set[:,position2].X.T, fs = 1/time/60)
+    plt.scatter(f, Pxx_den.T,label=series_2)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylim([1e-2, 1e3])
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD [V**2/Hz]')
+    plt.show()
+    
+    return
     
 
-def get_similarity(series_1, series_2):
-    # rough idea:
-    # 1) get periodogram of both series.
+def get_similarity(miRNA_set, series_1, series_2,time):
     
-    series1_array = signal.periodogram(series_1)
-    series2_array = signal.periodogram(series_2)
     
+    position1 = list(miRNA_set.var.index).index(series_1)
+    position2 = list(miRNA_set.var.index).index(series_2)
+    
+    
+    pd_array = get_periodgram(miRNA_set)
+    series_1_array = pd_array[position1]
+    series_2_array = pd_array[position2]
+    for i in (0,len(series_1_array)-1):
+        dist = np.sum ((series_1_array[i] - series_2_array[i])**2)
+        
+
     # 2) filter to frequencies of interest (not too fast, <= 30min)
     # 3) How close are they? 
     # 3a Naive : sum ((series_1_pd_i :- series_2_pd_i)**2)
     # 3b) maybe normalize first? (normalize in frequency space)
     # 3c) Apply filter to only use some frequencies?
     
-    
-   
-    #series1 and series2 should have the same shape
-    for i in range(0,len(series1_array)):
-         dist1 = np.sum(dist(series1_array[i],series2_array[i]))
-    
-    for dataset in (series_1, series_2):
-        position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
-        f, Pxx_den = signal.periodogram(dataset[:,position].X.T, fs = 1/12.5/60)
-        lib.plt.scatter(f, Pxx_den.T,label=label)
-        lib.plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        lib.plt.ylim([1e-2, 1e3])
-        lib.plt.xlabel('frequency [Hz]')
-        lib.plt.ylabel('PSD [V**2/Hz]')
-        lib.plt.show()
-    
-    
-    return dist1
+    return 1 - dist**.5
    
 if __name__ == '__main__':
     ''' 
