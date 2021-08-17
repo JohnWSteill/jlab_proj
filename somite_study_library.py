@@ -218,27 +218,35 @@ def prep_data(adata,K_start, K_end):
     # filter out beginning and ending? Look at a few genes and make a guess
     
 
-def get_similarity(series_1, series_2):
+def get_similarity(miRNA_set, series_1, series_2,time,):
     
-    for dataset in (series_1, series_2):
-        position = list(miRNA_set.var.index).index('hsa-miR-10a-5p')
-        f, Pxx_den = signal.periodogram(dataset[:,position].X.T, fs = 1/12.5/60)
-        lib.plt.scatter(f, Pxx_den.T,label=label)
-        lib.plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        lib.plt.ylim([1e-2, 1e3])
-        lib.plt.xlabel('frequency [Hz]')
-        lib.plt.ylabel('PSD [V**2/Hz]')
-        lib.plt.show()
     
-    series1_array = lib.get_periodgram(series_1)
-    series2_array = lib.get_periodgram(series_2)
-    #series1 and series2 should have the same shape
-    for i in len(series1_array):
-         dist = np.sum(dist(series1_array[i],series2_array[i]))
+    position1 = list(miRNA_set.var.index).index(series_1)
+    f, Pxx_den = signal.periodogram(miRNA_set[:,position1].X.T, fs = 1/time/60)
+    plt.scatter(f, Pxx_den.T,label=series_1)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylim([1e-2, 1e3])
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD [V**2/Hz]')
+    plt.show()
+    
+    position2 = list(miRNA_set.var.index).index(series_2)
+    f, Pxx_den = signal.periodogram(miRNA_set[:,position2].X.T, fs = 1/time/60)
+    plt.scatter(f, Pxx_den.T,label=series_2)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylim([1e-2, 1e3])
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD [V**2/Hz]')
+    plt.show()
+    
+    #for i in len(series1_array):
+         #dist = np.sum(dist(series1_array[i],series2_array[i]))
         
+
+    
     return
     # rough idea:
-    # 1) get periodogram of both series.
+    # 1) get periodogram of both series.                                             done
     # 2) filter to frequencies of interest (not too fast, <= 30min)
     # 3) How close are they? 
     # 3a Naive : sum ((series_1_pd_i - series_2_pd_i)**2)
