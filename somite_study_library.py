@@ -213,8 +213,8 @@ def draw_single_miRNA(miRNA_of_interest, data_sets):
     plt.title(f"{miRNA_of_interest} Under Three Time Courses")
     return (fig, ax)
 
-def prep_data(adata,K):
-     return adata[K:len(s743_adata.obs)-K-1]
+def prep_data(adata,K_start, K_end):
+     return adata[K_start:len(s743_adata.obs)-K_end-1]
     # filter out beginning and ending? Look at a few genes and make a guess
     
 
