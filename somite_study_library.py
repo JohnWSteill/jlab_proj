@@ -218,7 +218,7 @@ def prep_data(adata,K_start, K_end):
     # filter out beginning and ending? Look at a few genes and make a guess
     
 
-def get_similarity(miRNA_set, series_1, series_2,time,):
+def get_similarity(miRNA_set, series_1, series_2,time):
     
     
     position1 = list(miRNA_set.var.index).index(series_1)
@@ -239,16 +239,21 @@ def get_similarity(miRNA_set, series_1, series_2,time,):
     plt.ylabel('PSD [V**2/Hz]')
     plt.show()
     
-    #for i in len(series1_array):
-         #dist = np.sum(dist(series1_array[i],series2_array[i]))
+    
+    pd_array = get_periodgram(miRNA_set)
+    series_1_array = pd_array[position1]
+    series_2_array = pd_array[position2]
+    for i in (0,len(series_1_array)-1):
+        dist = np.sum ((series_1_array[i] - series_2_array[i])**2)
+    print('Distence between the two series:')
+    print(dist)
         
 
-    
     return
     # rough idea:
     # 1) get periodogram of both series.                                             done
     # 2) filter to frequencies of interest (not too fast, <= 30min)
-    # 3) How close are they? 
+    # 3) How close are they?                                                         done
     # 3a Naive : sum ((series_1_pd_i - series_2_pd_i)**2)
     # 3b) maybe normaize first?
     # 3c) Apply filter to only use some frequencies?
