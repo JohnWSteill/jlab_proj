@@ -254,4 +254,13 @@ def get_similarity(series_1, series_2):
     
     return dist1
    
-    # 
+if __name__ == '__main__':
+    ''' 
+    This is for debugging. Have to remember to be careful when pasting back 
+    and forth to the jupyter notebook, because the namespace there always start
+    with lib.<thingy>
+    '''
+    sub_0745_I, sub_0745_II, sub_0743, sub_0800, sub_0814 = load_top_expressed_preprocessed_data()
+    series_1 = get_series_for_var('hsa-miR-125a-5p', sub_0814)
+    series_2 = get_series_for_var('hsa-miR-10a-5p', sub_0814)
+    get_similarity(series_1, series_2)
