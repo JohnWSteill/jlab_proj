@@ -244,6 +244,11 @@ def plot_2_periodogram(miRNA_set, series_1, series_2,time):
     
 
 def get_similarity(miRNA_set, series_1, series_2,time):
+    # concerns:
+    #  1) similarity should be bounded to [0,1] (possbly [-1,1]) but certainly no big negative numbers!
+    #  normalization should take care of this. 
+    #  2) filter - complicted because we need to choose freq fiter, and then implement given out time 
+    #  parameter to this function. 
     
     
     position1 = list(miRNA_set.var.index).index(series_1)
@@ -253,7 +258,7 @@ def get_similarity(miRNA_set, series_1, series_2,time):
     pd_array = get_periodgram(miRNA_set)
     series_1_array = pd_array[position1]
     series_2_array = pd_array[position2]
-    for i in (0,len(series_1_array)-1):
+    for i in (0,len(series_1_array)-1): # what if we just itereate over frequencies of interest? (0.00013, 0.0033)
         dist = np.sum ((series_1_array[i] - series_2_array[i])**2)
         
 
