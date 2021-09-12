@@ -220,20 +220,35 @@ def prep_data(adata,K_start, K_end):
     return adata[K_start:len(adata.obs)-K_end-1]
    
 
-def plot_2_periodogram(miRNA_set, series_1, series_2,time):
+def plot_2_periodogram(miRNA_set, series_1, series_2,time,low_fre,high_fre):
     
     position1 = list(miRNA_set.var.index).index(series_1)
     position2 = list(miRNA_set.var.index).index(series_2)
     
     f, Pxx_den = signal.periodogram(miRNA_set[:,position1].X.T, fs = 1/time/60)
-    plt.scatter(f, Pxx_den.T,label=series_1)
+    f_arr = []
+    Pxx_den_arr = []
+    for i in range(0,len(f)):
+        if low_fre < f[i] < high_fre:
+            f_arr.append(f[i])
+            Pxx_den_arr.append(Pxx_den[0][i])       
+    
+    plt.scatter(f_arr, Pxx_den_arr,label=series_1)
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.ylim([1e-2, 1e3])
     plt.xlabel('frequency [Hz]')
     plt.ylabel('PSD [V**2/Hz]')
     plt.show()
+    
     f, Pxx_den = signal.periodogram(miRNA_set[:,position2].X.T, fs = 1/time/60)
-    plt.scatter(f, Pxx_den.T,label=series_2)
+    f_arr = []
+    Pxx_den_arr = []
+    for i in range(0,len(f)):
+        if low_fre < f[i] < high_fre:
+            f_arr.append(f[i])
+            Pxx_den_arr.append(Pxx_den[0][i])       
+    
+    plt.scatter(f_arr, Pxx_den_arr,label=series_2)
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.ylim([1e-2, 1e3])
     plt.xlabel('frequency [Hz]')
