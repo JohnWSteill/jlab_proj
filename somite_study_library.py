@@ -273,8 +273,23 @@ def get_similarity(miRNA_set, series_1, series_2,time):
     pd_array = get_periodgram(miRNA_set)
     series_1_array = pd_array[position1]
     series_2_array = pd_array[position2]
+    num1 = 0
+    num1_root = 0
+    for i in (0,len(series_1_array)-1):
+        num1 = np.sum(series_1_array[i]**2)
+    num1_root = num1**.5
+     
+    num2 = 0
+    num2_root = 0
+    for i in (0,len(series_2_array)-1):
+        num2 = np.sum(series_2_array[i]**2)
+    num2_root = num2**.5
+    
+    series_1_array_normed = series_1_array/num1_root
+    series_2_array_normed = series_2_array/num2_root
     for i in (0,len(series_1_array)-1): # what if we just itereate over frequencies of interest? (0.00013, 0.0033)
-        dist = np.sum ((series_1_array[i] - series_2_array[i])**2)
+        dist = np.sum ((series_1_array_normed[i] - series_2_array_normed[i])**2)
+    
         
 
     # 2) filter to frequencies of interest (not too fast, <= 30min)
