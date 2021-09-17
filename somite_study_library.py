@@ -221,7 +221,8 @@ def prep_data(adata,K_start, K_end):
    
 
 def plot_2_periodogram(miRNA_set, series_1, series_2,time,low_fre,high_fre):
-    
+    # Homework for next time - pythonic list comprehesions!
+    # Because you are simultaneously iterating over two arrays, check out zip!
     position1 = list(miRNA_set.var.index).index(series_1)
     position2 = list(miRNA_set.var.index).index(series_2)
     
@@ -254,8 +255,7 @@ def plot_2_periodogram(miRNA_set, series_1, series_2,time,low_fre,high_fre):
     plt.xlabel('frequency [Hz]')
     plt.ylabel('PSD [V**2/Hz]')
     plt.show()
-    
-    return
+
     
 
 def get_similarity(miRNA_set, series_1, series_2,time):
@@ -273,22 +273,13 @@ def get_similarity(miRNA_set, series_1, series_2,time):
     pd_array = get_periodgram(miRNA_set)
     series_1_array = pd_array[position1]
     series_2_array = pd_array[position2]
-    num1 = 0
-    num1_root = 0
-    for i in (0,len(series_1_array)-1):
-        num1 = np.sum(series_1_array[i]**2)
-    num1_root = num1**.5
-     
-    num2 = 0
-    num2_root = 0
-    for i in (0,len(series_2_array)-1):
-        num2 = np.sum(series_2_array[i]**2)
-    num2_root = num2**.5
+    num1_root = np.sum([el**2 for el in series_1_array])**.5
+    num2_root = np.sum([el**2 for el in series_2_array])**.5
     
     series_1_array_normed = series_1_array/num1_root
     series_2_array_normed = series_2_array/num2_root
-    for i in (0,len(series_1_array)-1): # what if we just itereate over frequencies of interest? (0.00013, 0.0033)
-        dist = np.sum ((series_1_array_normed[i] - series_2_array_normed[i])**2)
+    
+    dist = np.sum ([el**2 for el in (series_1_array_normed - series_2_array_normed)])**.5
     
         
 
@@ -298,7 +289,7 @@ def get_similarity(miRNA_set, series_1, series_2,time):
     # 3b) maybe normalize first? (normalize in frequency space)
     # 3c) Apply filter to only use some frequencies?
     
-    return 1 - dist**.5
+    return 1 - dist
    
 if __name__ == '__main__':
     ''' 
