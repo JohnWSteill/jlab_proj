@@ -227,12 +227,11 @@ def plot_2_periodogram(miRNA_set, series_1, series_2,time,low_fre,high_fre):
     position2 = list(miRNA_set.var.index).index(series_2)
     
     f, Pxx_den = signal.periodogram(miRNA_set[:,position1].X.T, fs = 1/time/60)
-    f_arr = []
     Pxx_den_arr = []
+    f_arr = [el for el in f if low_fre < el < high_fre]
     for i in range(0,len(f)):
         if low_fre < f[i] < high_fre:
-            f_arr.append(f[i])
-            Pxx_den_arr.append(Pxx_den[0][i])       
+            Pxx_den_arr.append(Pxx_den[0][i]) 
     
     plt.scatter(f_arr, Pxx_den_arr,label=series_1)
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -242,12 +241,12 @@ def plot_2_periodogram(miRNA_set, series_1, series_2,time,low_fre,high_fre):
     plt.show()
     
     f, Pxx_den = signal.periodogram(miRNA_set[:,position2].X.T, fs = 1/time/60)
-    f_arr = []
+    f_arr = [el for el in f if low_fre < el < high_fre]
     Pxx_den_arr = []
     for i in range(0,len(f)):
         if low_fre < f[i] < high_fre:
-            f_arr.append(f[i])
-            Pxx_den_arr.append(Pxx_den[0][i])       
+            Pxx_den_arr.append(Pxx_den[0][i]) 
+    
     
     plt.scatter(f_arr, Pxx_den_arr,label=series_2)
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
